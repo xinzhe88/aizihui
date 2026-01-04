@@ -208,14 +208,14 @@
       <div class="topbar">
         <div class="brand">
           <span class="dot" aria-hidden="true"></span>
-          <span id="titleText">给你的爱意</span>
+          <span id="titleText">爱你的包子</span>
         </div>
         <div class="hint">提示：点击/触摸任意位置，会放出一朵爱心</div>
       </div>
 
       <div class="content">
-        <h1 id="headline">我想把喜欢，慢慢说给你听。</h1>
-        <p class="sub" id="subtitle">这是一封会动的情书。你可以改名字、改日期、改内容，然后发给 TA。</p>
+        <h1 id="headline">福慧长增</h1>
+        <p class="sub" id="subtitle">包子一直在哦，永远爱你</p>
 
         <div class="typebox">
           <pre><span id="typed"></span><span class="cursor" aria-hidden="true"></span></pre>
@@ -238,10 +238,10 @@
 
   <script>
     const qs = new URLSearchParams(location.search);
-    const to = qs.get('to') || '你';
-    const from = qs.get('from') || '我';
+    const to = qs.get('to') || '慧宝';
+    const from = qs.get('from') || '包子';
     const date = qs.get('date') || new Date().toISOString().slice(0, 10);
-    const title = qs.get('title') || '给你的爱意';
+    const title = qs.get('title') || '爱你的包子';
 
     document.getElementById('titleText').textContent = title;
     document.title = title;
