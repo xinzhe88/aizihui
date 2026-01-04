@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>给你的爱意</title>
+  <style>
+    :root{
+      --bg1:#0b1020;
+      --bg2:#1a1033;
+      --card:rgba(255,255,255,.08);
+      --card2:rgba(255,255,255,.06);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.72);
+      --accent:#ff4d7d;
+      --accent2:#ff9a5a;
+      --shadow:0 20px 60px rgba(0,0,0,.45);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--text);
+      background: radial-gradient(1200px 800px at 20% 10%, rgba(255,77,125,.22), transparent 60%),
+                  radial-gradient(1000px 700px at 80% 20%, rgba(255,154,90,.18), transparent 55%),
+                  linear-gradient(160deg, var(--bg1), var(--bg2));
+      overflow:hidden;
+    }
+
+    canvas#fx{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:0;
+    }
+
+    .wrap{
+      position:relative;
+      z-index:1;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    .card{
+      width:min(760px, 100%);
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      overflow:hidden;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:18px 18px 12px 18px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:700;
+      letter-spacing:.3px;
+    }
+
+    .dot{
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #fff, var(--accent));
+      box-shadow: 0 0 22px rgba(255,77,125,.55);
+    }
+
+    .hint{
+      font-size:13px;
+      color:var(--muted);
+      user-select:none;
+    }
+
+    .content{
+      padding:6px 18px 18px 18px;
+    }
+
+    h1{
+      margin:8px 0 6px 0;
+      font-size:26px;
+      line-height:1.25;
+    }
+
+    .sub{
+      margin:0 0 14px 0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .typebox{
+      margin-top:10px;
+      padding:16px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      min-height:160px;
+      position:relative;
+    }
+
+    .typebox pre{
+      margin:0;
+      white-space:pre-wrap;
+      word-break:break-word;
+      font-size:16px;
+      line-height:1.85;
+      color: rgba(255,255,255,.92);
+    }
+
+    .cursor{
+      display:inline-block;
+      width:10px;
+      height:1.2em;
+      transform: translateY(3px);
+      background: rgba(255,255,255,.9);
+      margin-left:4px;
+      animation: blink 1s steps(1,end) infinite;
+    }
+
+    @keyframes blink{ 50%{opacity:0} }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+
+    button{
+      border:0;
+      border-radius:999px;
+      padding:10px 14px;
+      color:var(--text);
+      background: rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.14);
+      cursor:pointer;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+    }
+
+    button:hover{
+      background: rgba(255,255,255,.14);
+      border-color: rgba(255,255,255,.22);
+    }
+
+    button:active{ transform: scale(.98); }
+
+    .primary{
+      background: linear-gradient(90deg, rgba(255,77,125,.95), rgba(255,154,90,.95));
+      border-color: rgba(255,255,255,.22);
+      box-shadow: 0 12px 30px rgba(255,77,125,.18);
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:999px;
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--muted);
+      font-size:13px;
+      user-select:none;
+    }
+
+    .footer{
+      padding:14px 18px 18px 18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:10px;
+      border-top:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.10);
+    }
+
+    a{color:rgba(255,255,255,.86)}
+    a:hover{color:#fff}
+
+    @media (max-width:520px){
+      h1{font-size:22px}
+      .typebox pre{font-size:15px}
+      .hint{display:none}
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fx"></canvas>
+
+  <div class="wrap">
+    <div class="card" role="group" aria-label="Love Card">
+      <div class="topbar">
+        <div class="brand">
+          <span class="dot" aria-hidden="true"></span>
+          <span id="titleText">给你的爱意</span>
+        </div>
+        <div class="hint">提示：点击/触摸任意位置，会放出一朵爱心</div>
+      </div>
+
+      <div class="content">
+        <h1 id="headline">我想把喜欢，慢慢说给你听。</h1>
+        <p class="sub" id="subtitle">这是一封会动的情书。你可以改名字、改日期、改内容，然后发给 TA。</p>
+
+        <div class="typebox">
+          <pre><span id="typed"></span><span class="cursor" aria-hidden="true"></span></pre>
+        </div>
+
+        <div class="row">
+          <button class="primary" id="replay">重新播放</button>
+          <button id="burst">放烟花（爱心）</button>
+          <button id="copy">复制情书文字</button>
+          <span class="pill" id="meta"></span>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="pill">可自定义：在链接后加参数，如 <code>?to=小鹿&from=阿辰&date=2026-01-04</code></div>
+        <div class="pill">背景音乐：默认关闭（避免打扰）</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const qs = new URLSearchParams(location.search);
+    const to = qs.get('to') || '你';
+    const from = qs.get('from') || '我';
+    const date = qs.get('date') || new Date().toISOString().slice(0, 10);
+    const title = qs.get('title') || '给你的爱意';
+
+    document.getElementById('titleText').textContent = title;
+    document.title = title;
+    document.getElementById('meta').textContent = `To ${to} · From ${from} · ${date}`;
+
+    const defaultMessage = [
+      `致 ${to}：`,
+      '',
+      '我不是很会把喜欢说得惊天动地，',
+      '但我想把它做成一件会被你看见的小事。',
+      '',
+      '从遇见你开始，',
+      '我的日子里多了一种习惯：',
+      '想你。',
+      '',
+      '想把好看的云指给你看，',
+      '想在你累的时候给你一个拥抱，',
+      '想在你开心的时候，做那个最先跟着笑的人。',
+      '',
+      `如果你愿意，`,
+      '我想一直站在你这一边。',
+      '',
+      `—— ${from}`
+    ].join('\n');
+
+    const msg = qs.get('msg') ? decodeURIComponent(qs.get('msg')) : defaultMessage;
+
+    const typedEl = document.getElementById('typed');
+    let typingTimer = null;
+    let i = 0;
+
+    function typewrite(reset = false) {
+      if (typingTimer) clearInterval(typingTimer);
+      if (reset) {
+        i = 0;
+        typedEl.textContent = '';
+      }
+      const speed = 20; // ms per char
+      typingTimer = setInterval(() => {
+        typedEl.textContent = msg.slice(0, i);
+        i++;
+        if (i > msg.length) {
+          clearInterval(typingTimer);
+          typingTimer = null;
+        }
+      }, speed);
+    }
+
+    document.getElementById('replay').addEventListener('click', () => typewrite(true));
+
+    document.getElementById('copy').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(msg);
+        toast('已复制到剪贴板');
+      } catch (e) {
+        toast('复制失败：浏览器可能不允许');
+      }
+    });
+
+    // Canvas hearts
+    const canvas = document.getElementById('fx');
+    const ctx = canvas.getContext('2d');
+    let W = 0, H = 0, DPR = 1;
+
+    function resize() {
+      DPR = Math.min(2, window.devicePixelRatio || 1);
+      W = Math.floor(window.innerWidth);
+      H = Math.floor(window.innerHeight);
+      canvas.width = Math.floor(W * DPR);
+      canvas.height = Math.floor(H * DPR);
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    const hearts = [];
+
+    function rand(min, max) { return min + Math.random() * (max - min); }
+
+    function drawHeart(x, y, size, rot, alpha, hue) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rot);
+      ctx.globalAlpha = alpha;
+
+      const grd = ctx.createLinearGradient(-size, -size, size, size);
+      grd.addColorStop(0, `hsla(${hue}, 95%, 70%, ${alpha})`);
+      grd.addColorStop(1, `hsla(${(hue + 35) % 360}, 95%, 65%, ${alpha})`);
+      ctx.fillStyle = grd;
+
+      ctx.beginPath();
+      // Parametric-ish heart using bezier curves
+      const s = size;
+      ctx.moveTo(0, s * 0.35);
+      ctx.bezierCurveTo(s * 0.9, -s * 0.35, s * 0.95, s * 0.7, 0, s * 1.05);
+      ctx.bezierCurveTo(-s * 0.95, s * 0.7, -s * 0.9, -s * 0.35, 0, s * 0.35);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function spawnHeart(x, y, burst = false) {
+      const count = burst ? 26 : 1;
+      for (let k = 0; k < count; k++) {
+        hearts.push({
+          x,
+          y,
+          vx: burst ? rand(-220, 220) : rand(-20, 20),
+          vy: burst ? rand(-260, 60) : rand(-120, -40),
+          size: burst ? rand(8, 16) : rand(10, 18),
+          rot: rand(-0.8, 0.8),
+          vr: rand(-1.8, 1.8),
+          life: burst ? rand(0.9, 1.4) : rand(2.2, 3.2),
+          t: 0,
+          hue: rand(330, 20) // wrap intentionally, use modulo when drawing
+        });
+      }
+    }
+
+    function tick(dt) {
+      ctx.clearRect(0, 0, W, H);
+
+      // gentle floating background hearts
+      if (Math.random() < 0.08) {
+        spawnHeart(rand(0, W), H + 20, false);
+      }
+
+      for (let idx = hearts.length - 1; idx >= 0; idx--) {
+        const p = hearts[idx];
+        p.t += dt;
+        const a = 1 - (p.t / p.life);
+        p.vy += 30 * dt; // gravity-ish
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.rot += p.vr * dt;
+
+        const alpha = Math.max(0, a);
+        drawHeart(p.x, p.y, p.size, p.rot, alpha, ((p.hue % 360) + 360) % 360);
+
+        if (p.t >= p.life || p.y < -80 || p.x < -120 || p.x > W + 120 || p.y > H + 160) {
+          hearts.splice(idx, 1);
+        }
+      }
+    }
+
+    let last = performance.now();
+    function loop(now) {
+      const dt = Math.min(0.033, (now - last) / 1000);
+      last = now;
+      tick(dt);
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+
+    function pointerXY(ev) {
+      if (ev.touches && ev.touches.length) {
+        return { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
+      }
+      return { x: ev.clientX, y: ev.clientY };
+    }
+
+    window.addEventListener('pointerdown', (ev) => {
+      const { x, y } = pointerXY(ev);
+      spawnHeart(x, y, true);
+    }, { passive: true });
+
+    document.getElementById('burst').addEventListener('click', () => {
+      spawnHeart(W * 0.5, H * 0.5, true);
+    });
+
+    // Toast
+    let toastTimer = null;
+    const toastEl = document.createElement('div');
+    toastEl.style.position = 'fixed';
+    toastEl.style.left = '50%';
+    toastEl.style.bottom = '22px';
+    toastEl.style.transform = 'translateX(-50%)';
+    toastEl.style.padding = '10px 14px';
+    toastEl.style.borderRadius = '999px';
+    toastEl.style.background = 'rgba(0,0,0,.55)';
+    toastEl.style.border = '1px solid rgba(255,255,255,.16)';
+    toastEl.style.color = 'rgba(255,255,255,.92)';
+    toastEl.style.fontSize = '13px';
+    toastEl.style.zIndex = '10';
+    toastEl.style.opacity = '0';
+    toastEl.style.transition = 'opacity .18s ease';
+    toastEl.style.pointerEvents = 'none';
+    document.body.appendChild(toastEl);
+
+    function toast(text) {
+      toastEl.textContent = text;
+      toastEl.style.opacity = '1';
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toastEl.style.opacity = '0';
+      }, 1600);
+    }
+
+    // Start typing after first paint
+    setTimeout(() => typewrite(true), 120);
+
+    // Initial tiny burst so user instantly sees motion
+    setTimeout(() => spawnHeart(W * 0.5, H * 0.45, true), 220);
+  </script>
+</body>
+</html>
